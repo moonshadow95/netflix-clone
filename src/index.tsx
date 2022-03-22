@@ -5,6 +5,7 @@ import {HelmetProvider} from "react-helmet-async";
 import {RecoilRoot} from "recoil";
 import {createGlobalStyle, ThemeProvider} from "styled-components";
 import {theme} from "./theme";
+import {QueryClient, QueryClientProvider} from 'react-query'
 
 const GlobalStyle = createGlobalStyle`
   html, body, div, span, applet, object, iframe,
@@ -37,8 +38,8 @@ const GlobalStyle = createGlobalStyle`
   body {
     line-height: 1.2;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: ${props => props.theme.bgColor};
     color: black;
+    height: 400vh;
 
     ol, ul {
       list-style: none;
@@ -69,15 +70,18 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 `;
+const client = new QueryClient()
 
 ReactDOM.render(
     <React.StrictMode>
         <RecoilRoot>
             <HelmetProvider>
-                <ThemeProvider theme={theme}>
-                    <GlobalStyle/>
-                    <App/>
-                </ThemeProvider>
+                <QueryClientProvider client={client}>
+                    <ThemeProvider theme={theme}>
+                        <GlobalStyle/>
+                        <App/>
+                    </ThemeProvider>
+                </QueryClientProvider>
             </HelmetProvider>
         </RecoilRoot>
     </React.StrictMode>,
