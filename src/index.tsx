@@ -40,6 +40,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Noto Sans KR', sans-serif;
     background-color: #000;
     color: #fff;
+    overflow-x: hidden;
 
     ol, ul {
       list-style: none;
