@@ -38,8 +38,8 @@ const GlobalStyle = createGlobalStyle`
   body {
     line-height: 1.2;
     font-family: 'Noto Sans KR', sans-serif;
-    color: black;
-    height: 400vh;
+    background-color: #000;
+    color: #fff;
 
     ol, ul {
       list-style: none;
