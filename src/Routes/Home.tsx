@@ -72,7 +72,15 @@ const Box = styled(motion.div)<{ bg_photo: string }>`
   height: 200px;
   color: #000;
   font-size: 24px;
-  border-radius: 4px
+  border-radius: 4px;
+
+  &:first-child {
+    transform-origin: left;
+  }
+
+  &:last-child {
+    transform-origin: right;
+  }
 `
 
 const rowVariants = {
@@ -81,6 +89,15 @@ const rowVariants = {
     },
     visible: {x: 0},
     exit: {x: -window.innerWidth}
+}
+
+const boxVariants = {
+    normal: {scale: 1},
+    hover: {
+        scale: 1.3,
+        y: -50,
+        transition: {delay: 0.5, type: 'tween'}
+    }
 }
 
 const offset = 6
@@ -137,7 +154,8 @@ const Home = () => {
                                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                                      transition={{type: 'linear', duration: 1}}>
                                     {content?.results.slice(1).slice(offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex) + offset).map((movie: any) =>
-                                        <Box key={movie.id}
+                                        <Box key={movie.id} variants={boxVariants}
+                                             initial='normal' whileHover='hover' transition={{type: 'tween'}}
                                              bg_photo={makeImagePath(movie.backdrop_path, "w500")}
                                         />)}
                                 </Row>
