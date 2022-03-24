@@ -29,11 +29,11 @@ export async function getMovies() {
     const translations = await getTranslation(508947, "KR")
     result['slider_title'] = '현재 상영중인 영화'
 
-    result.results.map((result: any) => {
-            result.title = translations.title
-            result.overview = translations.overview
-        }
-    )
+    // result.results.map((result: any) => {
+    //         result.title = translations.title
+    //         result.overview = translations.overview
+    //     }
+    // )
     return result
 }
 
@@ -41,12 +41,12 @@ export async function getTrending() {
     const result = await (await fetch(`${BASE_PATH}/trending/all/day?api_key=${API_KEY}`)).json()
     const translations = await getTranslation(508947, "KR")
     result['slider_title'] = '지금 뜨는 콘텐츠'
-
-    result.results.map((result: any) => {
-            result.title = translations.title
-            result.overview = translations.overview
-        }
-    )
+    //
+    // result.results.map((result: any) => {
+    //         result.title = translations.title
+    //         result.overview = translations.overview
+    //     }
+    // )
     return result
 }
 

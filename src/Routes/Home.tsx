@@ -4,6 +4,7 @@ import {useQuery} from "react-query";
 import styled from "styled-components";
 import {makeImagePath} from "../utils";
 import {AnimatePresence, motion} from "framer-motion";
+import {useMatch, useNavigate} from "react-router-dom";
 
 const Wrapper = styled.div`
 
@@ -73,6 +74,7 @@ const Box = styled(motion.div)<{ bg_photo: string }>`
   color: #000;
   font-size: 24px;
   border-radius: 4px;
+  cursor: pointer;
 
   &:first-child {
     transform-origin: left;
@@ -81,6 +83,17 @@ const Box = styled(motion.div)<{ bg_photo: string }>`
   &:last-child {
     transform-origin: right;
   }
+`
+
+const Info = styled(motion.div)`
+  padding: 10px;
+  background-color: ${props => props.theme.black.lighter};
+  color: ${props => props.theme.white.lighter};
+  opacity: 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 1rem;
 `
 
 const rowVariants = {
@@ -96,8 +109,15 @@ const boxVariants = {
     hover: {
         scale: 1.3,
         y: -50,
-        transition: {delay: 0.5, type: 'tween'}
+        transition: {delay: 0.5, type: 'tween'},
     }
+}
+
+const infoVariants = {
+    hover: {
+        opacity: 1,
+        transition: {delay: 0.5, type: 'tween'},
+    },
 }
 
 const offset = 6
@@ -111,6 +131,9 @@ const Home = () => {
         data: trending,
         isLoading: trendingIsLoading
     } = useQuery<GetTrendingResult>(["contents", "trending"], getTrending)
+    const navigate = useNavigate()
+    const bigMovieMatch = useMatch('/movies/:movieId')
+    const onBoxClick = (id: number) => navigate(`movies/${id}`)
     const contents = [nowPlaying, trending]
     const [rowIndex, setIndex] = useState(0)
     const [secondIndex, setSecondIndex] = useState(0)
@@ -154,15 +177,34 @@ const Home = () => {
                                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                                      transition={{type: 'linear', duration: 1}}>
                                     {content?.results.slice(1).slice(offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex) + offset).map((movie: any) =>
-                                        <Box key={movie.id} variants={boxVariants}
+                                        <Box key={movie.id} onClick={() => onBoxClick(movie.id)}
+                                             layoutId={movie.id + ""} variants={boxVariants}
                                              initial='normal' whileHover='hover' transition={{type: 'tween'}}
                                              bg_photo={makeImagePath(movie.backdrop_path, "w500")}
-                                        />)}
+                                        >
+                                            <Info variants={infoVariants}>
+                                                <h4>{movie.title || movie.name}</h4>
+                                            </Info>
+                                        </Box>)}
                                 </Row>
                             </AnimatePresence>
                         </Slider>
                     )
                 }
+                {bigMovieMatch && <AnimatePresence>
+                    <motion.div
+                        layoutId={bigMovieMatch.params.movieId}
+                        style={{
+                            position: 'absolute',
+                            width: '90vw',
+                            height: '90vh',
+                            backgroundColor: 'red',
+                            top: 50,
+                            left: 0,
+                            right: 0,
+                            margin: '0 auto'
+                        }}/>
+                </AnimatePresence>}
             </>}
     </Wrapper>
 };

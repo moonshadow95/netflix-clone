@@ -12,7 +12,9 @@ function App() {
         <BrowserRouter>
             <Header/>
             <Routes>
-                <Route path='/' element={<Home/>}/>
+                <Route path='/*' element={<Home/>}>
+                    <Route path='movies/:movieId'/>
+                </Route>
                 <Route path='/series' element={<Series/>}/>
                 <Route path='/latest' element={<Latest/>}/>
                 <Route path='/my-list' element={<MyList/>}/>
