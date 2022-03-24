@@ -56,19 +56,19 @@ const Search = styled.span`
 
   svg {
     height: 25px;
-    margin-left: -46px;
   }
 `
 
 const Input = styled(motion.input)`
   transform-origin: right center;
+  width: 280px;
   position: absolute;
   right: 0px;
   padding: 10px;
   padding-left: 40px;
   color: white;
   font-size: 18px;
-  background-color: transparent;
+  background-color: rgb(30, 30, 30);
   border: 1px solid ${(props) => props.theme.white.lighter};
 `
 
@@ -164,7 +164,7 @@ const Header = () => {
                 <Search>
                     <motion.svg
                         onClick={toggleSearch}
-                        animate={{x: searchOpen ? -180 : 0}}
+                        animate={{x: searchOpen ? -242 : 0}}
                         transition={{type: "linear"}}
                         style={{zIndex: 1}}
                         fill="currentColor"

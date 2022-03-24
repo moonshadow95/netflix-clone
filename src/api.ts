@@ -55,3 +55,5 @@ export async function getTranslation(id: number, iso: string) {
     const translations = result.translations.find((item: any) => item.iso_3166_1 === iso).data
     return {title: translations.title, overview: translations.overview}
 }
+
+// TODO - Fix Translations

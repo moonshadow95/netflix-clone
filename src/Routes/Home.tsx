@@ -6,7 +6,6 @@ import {makeImagePath} from "../utils";
 import {AnimatePresence, motion} from "framer-motion";
 
 const Wrapper = styled.div`
-  background-color: #000;
 
 `
 
@@ -19,12 +18,12 @@ const Loader = styled.div`
 
 const Banner = styled.div<{ bg_photo: string }>`
   width: 100%;
-  height: 64vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 70px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 1)), url(${props => props.bg_photo});
+  background-image: linear-gradient(rgba(0, 0, 0, 0) 80%, rgba(20, 20, 20, 0.8), rgb(20, 20, 20, 1)), url(${props => props.bg_photo});
   background-size: cover;
   background-repeat: no-repeat;
 `
@@ -46,7 +45,7 @@ const Slider = styled.div`
   position: relative;
   width: calc(100% - 140px);
   margin: 0 auto;
-  top: -130px;
+  top: -310px;
   height: 320px;
 
 `
@@ -91,6 +90,7 @@ const Home = () => {
         data: nowPlaying,
         isLoading: nowPlayingIsLoading
     } = useQuery<GetMoviesResult>(["contents", "nowPlaying"], getMovies)
+    console.log(nowPlaying)
     const {
         data: trending,
         isLoading: trendingIsLoading
@@ -111,13 +111,10 @@ const Home = () => {
             const totalMovies = nowPlaying?.results.length || trending?.results.length
             const maxIndex = Math.floor((totalMovies || 1) / offset)
             setIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
-
-            console.log(rowIndex)
         }
     }
-    console.log(nowPlaying)
-    console.log(trending)
     const toggleLeaving = () => setLeaving(prev => !prev)
+
     return <Wrapper>
         {nowPlayingIsLoading || trendingIsLoading ?
             <Loader>Loading...</Loader> : <>
