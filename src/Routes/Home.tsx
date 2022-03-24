@@ -90,25 +90,28 @@ const Home = () => {
         data: nowPlaying,
         isLoading: nowPlayingIsLoading
     } = useQuery<GetMoviesResult>(["contents", "nowPlaying"], getMovies)
-    console.log(nowPlaying)
     const {
         data: trending,
         isLoading: trendingIsLoading
     } = useQuery<GetTrendingResult>(["contents", "trending"], getTrending)
     const contents = [nowPlaying, trending]
     const [rowIndex, setIndex] = useState(0)
+    const [secondIndex, setSecondIndex] = useState(0)
     const [leaving, setLeaving] = useState(false)
     const increaseIndex = (event: any) => {
         if (leaving) return
         const {currentTarget} = event
         if (currentTarget.id === "현재 상영중인 영화") {
-            return
-        }
-        if (currentTarget.id === '지금 뜨는 콘텐츠') {
-
             if (leaving) return
             toggleLeaving()
-            const totalMovies = nowPlaying?.results.length || trending?.results.length
+            const totalMovies = nowPlaying?.results.length
+            const maxIndex = Math.floor((totalMovies || 1) / offset)
+            setSecondIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
+        }
+        if (currentTarget.id === '지금 뜨는 콘텐츠') {
+            if (leaving) return
+            toggleLeaving()
+            const totalMovies = trending?.results.length
             const maxIndex = Math.floor((totalMovies || 1) / offset)
             setIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
         }
@@ -130,10 +133,10 @@ const Home = () => {
                                 <button id={content.slider_title} onClick={increaseIndex}>next</button>
                             </SliderTitle>
                             <AnimatePresence onExitComplete={toggleLeaving} initial={false}>
-                                <Row key={content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : null}
+                                <Row key={content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex}
                                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                                      transition={{type: 'linear', duration: 1}}>
-                                    {content?.results.slice(1).slice(offset * rowIndex, offset * rowIndex + offset).map((movie: any) =>
+                                    {content?.results.slice(1).slice(offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex) + offset).map((movie: any) =>
                                         <Box key={movie.id}
                                              bg_photo={makeImagePath(movie.backdrop_path, "w500")}
                                         />)}
