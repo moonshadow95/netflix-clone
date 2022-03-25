@@ -3,7 +3,7 @@ import {getMovies, GetMoviesResult, getTrending, GetTrendingResult} from "../api
 import {useQuery} from "react-query";
 import styled from "styled-components";
 import {makeImagePath} from "../utils";
-import {AnimatePresence, motion} from "framer-motion";
+import {AnimatePresence, motion, useViewportScroll} from "framer-motion";
 import {useMatch, useNavigate} from "react-router-dom";
 
 const Wrapper = styled.div`
@@ -96,6 +96,14 @@ const Info = styled(motion.div)`
   font-size: 1rem;
 `
 
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+`
 const rowVariants = {
     hidden: {
         x: window.innerWidth
@@ -133,7 +141,9 @@ const Home = () => {
     } = useQuery<GetTrendingResult>(["contents", "trending"], getTrending)
     const navigate = useNavigate()
     const bigMovieMatch = useMatch('/movies/:movieId')
+    const {scrollY} = useViewportScroll()
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
+    const onOverlayClick = () => navigate('/')
     const contents = [nowPlaying, trending]
     const [rowIndex, setIndex] = useState(0)
     const [secondIndex, setSecondIndex] = useState(0)
@@ -148,7 +158,7 @@ const Home = () => {
             const maxIndex = Math.floor((totalMovies || 1) / offset)
             setSecondIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
         }
-        if (currentTarget.id === '지금 뜨는 콘텐츠') {
+        if (currentTarget.id === '인기 TV 콘텐츠') {
             if (leaving) return
             toggleLeaving()
             const totalMovies = trending?.results.length
@@ -173,10 +183,10 @@ const Home = () => {
                                 <button id={content.slider_title} onClick={increaseIndex}>next</button>
                             </SliderTitle>
                             <AnimatePresence onExitComplete={toggleLeaving} initial={false}>
-                                <Row key={content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex}
+                                <Row key={content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex}
                                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                                      transition={{type: 'linear', duration: 1}}>
-                                    {content?.results.slice(1).slice(offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '지금 뜨는 콘텐츠' ? rowIndex : secondIndex) + offset).map((movie: any) =>
+                                    {content?.results.slice(1).slice(offset * (content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex) + offset).map((movie: any) =>
                                         <Box key={movie.id} onClick={() => onBoxClick(movie.id)}
                                              layoutId={movie.id + ""} variants={boxVariants}
                                              initial='normal' whileHover='hover' transition={{type: 'tween'}}
@@ -192,18 +202,25 @@ const Home = () => {
                     )
                 }
                 {bigMovieMatch && <AnimatePresence>
-                    <motion.div
-                        layoutId={bigMovieMatch.params.movieId}
-                        style={{
-                            position: 'absolute',
-                            width: '90vw',
-                            height: '90vh',
-                            backgroundColor: 'red',
-                            top: 50,
-                            left: 0,
-                            right: 0,
-                            margin: '0 auto'
-                        }}/>
+                    <>
+                        <motion.div
+                            layoutId={bigMovieMatch.params.movieId}
+                            style={{
+                                position: 'absolute',
+                                marginTop: 40,
+                                width: '90vw',
+                                maxWidth: 1200,
+                                height: '90vh',
+                                backgroundColor: 'green',
+                                borderRadius: 10,
+                                top: scrollY.get() + 50,
+                                left: 0,
+                                right: 0,
+                                margin: '0 auto',
+                                zIndex: 10,
+                            }}/>
+                        <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}}/>
+                    </>
                 </AnimatePresence>}
             </>}
     </Wrapper>
