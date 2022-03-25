@@ -104,6 +104,40 @@ const Overlay = styled(motion.div)`
   height: 100%;
   opacity: 0;
 `
+
+const Popup = styled(motion.div)`
+  position: absolute;
+  margin-top: 40px;
+  width: 95vw;
+  max-width: 1200px;
+  height: 90vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 10;
+`
+
+const PopupTitle = styled.h3`
+  color: ${props => props.theme.white.lighter};
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  font-size: 36px;
+`
+
+const PopupOverview = styled.p`
+  color: ${props => props.theme.white.lighter};
+  padding: 20px 50px;
+  position: absolute;
+  top: 60%;
+
+`
+
+const PopupCover = styled.div`
+  height: 60vh;
+  border-radius: 10px;
+`
+
 const rowVariants = {
     hidden: {
         x: window.innerWidth
@@ -140,10 +174,15 @@ const Home = () => {
         isLoading: trendingIsLoading
     } = useQuery<GetTrendingResult>(["contents", "trending"], getTrending)
     const navigate = useNavigate()
-    const bigMovieMatch = useMatch('/movies/:movieId')
+    const clickedContentMatch = useMatch('/movies/:movieId')
     const {scrollY} = useViewportScroll()
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
     const onOverlayClick = () => navigate('/')
+    const clickedContent = clickedContentMatch?.params.movieId && (nowPlaying || trending)?.results.find((movie: any) => {
+        if (clickedContentMatch.params.movieId) {
+            return movie.id === +clickedContentMatch.params.movieId
+        }
+    })
     const contents = [nowPlaying, trending]
     const [rowIndex, setIndex] = useState(0)
     const [secondIndex, setSecondIndex] = useState(0)
@@ -201,24 +240,24 @@ const Home = () => {
                         </Slider>
                     )
                 }
-                {bigMovieMatch && <AnimatePresence>
+                {clickedContentMatch && <AnimatePresence>
                     <>
-                        <motion.div
-                            layoutId={bigMovieMatch.params.movieId}
+                        <Popup
+                            layoutId={clickedContentMatch.params.movieId}
                             style={{
-                                position: 'absolute',
-                                marginTop: 40,
-                                width: '90vw',
-                                maxWidth: 1200,
-                                height: '90vh',
-                                backgroundColor: 'green',
-                                borderRadius: 10,
-                                top: scrollY.get() + 50,
-                                left: 0,
-                                right: 0,
-                                margin: '0 auto',
-                                zIndex: 10,
-                            }}/>
+                                top: scrollY.get() + 50
+                            }}
+                        >{clickedContent && <>
+                            <PopupTitle>{clickedContent.title}</PopupTitle>
+                            <PopupOverview>{clickedContent.overview}</PopupOverview>
+                            <PopupCover
+                                style={{
+                                    backgroundImage: `linear-gradient(transparent
+                                    60%, rgb(20, 20, 20, 1)),url(${makeImagePath(clickedContent.backdrop_path, "")}`,
+                                    backgroundSize: 'cover'
+                                }}
+                            />
+                        </>}</Popup>
                         <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}}/>
                     </>
                 </AnimatePresence>}

@@ -50,10 +50,13 @@ export async function getTrending() {
     return result
 }
 
+// TODO - Fix Translations
 export async function getTranslation(id: number, iso: string) {
     const result = await (await fetch(`${BASE_PATH}/movie/${id}/translations?api_key=${API_KEY}`)).json()
     const translations = result.translations.find((item: any) => item.iso_3166_1 === iso).data
     return {title: translations.title, overview: translations.overview}
 }
 
-// TODO - Fix Translations
+export async function searchMovieByKeyword(keyword: string) {
+    return await (await fetch(`${BASE_PATH}/search/movie?api_key=${API_KEY}&query=${keyword}&page=1&include_adult=false`)).json()
+}

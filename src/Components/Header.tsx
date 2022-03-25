@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
 import {motion, useAnimation, useViewportScroll} from "framer-motion";
-import {Link, useMatch} from "react-router-dom";
+import {Link, useMatch, useNavigate} from "react-router-dom";
+import {useForm} from "react-hook-form";
 
 const Nav = styled(motion.div)`
   display: flex;
@@ -47,7 +48,7 @@ const Circle = styled(motion.span)`
   margin: 0 auto
 `
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   display: flex;
   align-items: center;
@@ -91,6 +92,10 @@ const navVariants = {
     }
 }
 
+interface Form {
+    keyword: string
+}
+
 const Header = () => {
     const homeMatch = useMatch('/')
     const seriesMatch = useMatch('/series')
@@ -121,6 +126,11 @@ const Header = () => {
             }
         })
     }, [scrollY])
+    const {register, handleSubmit} = useForm<Form>();
+    const onValid = (data: Form) => {
+        navigate(`/search?keyword=${data.keyword}`)
+    }
+    const navigate = useNavigate()
     return (
         <Nav
             initial="top"
@@ -161,7 +171,7 @@ const Header = () => {
                 </Items>
             </Col>
             <Col>
-                <Search>
+                <Search onSubmit={handleSubmit(onValid)}>
                     <motion.svg
                         onClick={toggleSearch}
                         animate={{x: searchOpen ? -242 : 0}}
@@ -177,7 +187,9 @@ const Header = () => {
                             clipRule="evenodd"
                         />
                     </motion.svg>
+                    {/*TODO - error message*/}
                     <Input
+                        {...register('keyword', {required: true, minLength: 2})}
                         initial={{scaleX: 0}}
                         animate={inputAnimation}
                         transition={{type: "linear"}}
