@@ -7,3 +7,4 @@ const Carousel = () => {
 };
 
 export default Carousel;
+// Todo - Separation

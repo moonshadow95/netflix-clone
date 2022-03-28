@@ -9,7 +9,7 @@ const Nav = styled(motion.div)`
   justify-content: space-between;
   align-items: center;
   height: 80px;
-  font-size: 16px;
+  font-size: 17px;
   color: white;
   position: fixed;
   top: 0;
@@ -32,7 +32,7 @@ const Items = styled.ul`
 
 const Item = styled.li`
   position: relative;
-  margin-right: 20px;
+  margin-right: 34px;
 
 `
 
@@ -99,6 +99,7 @@ interface Form {
 const Header = () => {
     const homeMatch = useMatch('/')
     const seriesMatch = useMatch('/series')
+    const moviesMatch = useMatch('/movies')
     const latestMatch = useMatch('/latest')
     const myMatch = useMatch('/my-list')
     const [searchOpen, setSearchOpen] = useState(false)
@@ -156,6 +157,11 @@ const Header = () => {
                     <Link to='/series'>
                         <Item>시리즈
                             {seriesMatch ? <Circle layoutId="circle"/> : null}
+                        </Item>
+                    </Link>
+                    <Link to='/movies'>
+                        <Item>영화
+                            {moviesMatch ? <Circle layoutId="circle"/> : null}
                         </Item>
                     </Link>
                     <Link to='/latest'>

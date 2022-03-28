@@ -6,6 +6,7 @@ import Search from "./Routes/Search";
 import Header from "./Components/Header";
 import MyList from "./Routes/MyList";
 import Latest from "./Routes/Latest";
+import Movies from "./Routes/Movies";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path='movies/:movieId'/>
                 </Route>
                 <Route path='/series' element={<Series/>}/>
+                <Route path='/movies' element={<Movies/>}/>
                 <Route path='/latest' element={<Latest/>}/>
                 <Route path='/my-list' element={<MyList/>}/>
                 <Route path='/search' element={<Search/>}/>
