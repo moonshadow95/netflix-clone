@@ -1,7 +1,7 @@
 const TMDB_API_KEY = "adfada52c0254da043e46aa3051d1af5"
 const YOUTUBE_API_KEY = "AIzaSyA_msx-1RyYLxUK0Xijqf9Yi5ZignK64Gg"
 const TMDB_BASE_PATH = "https://api.themoviedb.org/3"
-const YOUTUBE_BASE_PATH = "http://googleapis.com/youtube/v3"
+const YOUTUBE_BASE_PATH = "https://www.googleapis.com/youtube/v3"
 
 export async function getMovies() {
     const result = await (await fetch(`${TMDB_BASE_PATH}/movie/now_playing?api_key=${TMDB_API_KEY}`)).json()
@@ -39,10 +39,8 @@ export async function searchMovieByKeyword(keyword: string) {
     return await (await fetch(`${TMDB_BASE_PATH}/search/movie?api_key=${TMDB_API_KEY}&query=${keyword}&page=1&include_adult=false`)).json()
 }
 
-async function getVideo(id: number) {
-    const query = '메이의 새빨간 비밀 예고편'
-    const result = await (await fetch(`${YOUTUBE_BASE_PATH}/search?part=snippet&maxResults=20&q=${query}&type=video&key=${YOUTUBE_API_KEY}`)).json()
-    return result
+export async function getVideo() {
+    const query = 'turning red trailer'
+    const result = await (await fetch(`${YOUTUBE_BASE_PATH}/«?part=snippet&maxResults=20&q=turning red trailer&type=video&key=${YOUTUBE_API_KEY}`)).json()
+    return result.items[0].id.videoId
 }
-
-getVideo(508947).then(res => console.log(res))

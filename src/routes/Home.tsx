@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {getMovies, getTvs} from "../util/api"
+import {getMovies, getTvs, getVideo} from "../util/api"
 import {useQuery} from "react-query"
 import styled from "styled-components"
 import {makeImagePath} from "../util/utils"
@@ -28,11 +28,35 @@ const Banner = styled.div<{ bg_photo: string }>`
   background-image: linear-gradient(rgba(0, 0, 0, 0) 80%, rgba(20, 20, 20, 0.8), rgb(20, 20, 20, 1)), url(${props => props.bg_photo});
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative;
+`
+
+const Trailer = styled.iframe`
+  position: absolute;
+  top: -32px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+`
+
+const Gradient = styled.div`
+  position: fixed;
+  bottom: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0) 80%, rgba(20, 20, 20, 0.8), rgb(20, 20, 20, 1));
+  pointer-events: none;
 `
 
 const Title = styled.h2`
   font-size: 66px;
   margin-bottom: 20px;
+  z-index: 1;
 `
 
 const Overview = styled.p`
@@ -41,6 +65,7 @@ const Overview = styled.p`
   text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
   line-height: 1.4em;
   word-break: keep-all;
+  z-index: 1;
 `
 
 const Slider = styled.div`
@@ -174,6 +199,7 @@ const Home = () => {
         data: tvs,
         isLoading: tvsIsLoading
     } = useQuery<GetTvsResult>(["contents", "tvs"], getTvs)
+    const {data: videoId, isLoading: videoIdIsLoading} = useQuery(["video"], getVideo)
     const contents = [movies, tvs]
     const navigate = useNavigate()
     const clickedContentMatch = useMatch('/movies/:movieId')
@@ -209,12 +235,19 @@ const Home = () => {
     }
     const toggleLeaving = () => setLeaving(prev => !prev)
 
-    return <Wrapper>
+    return <Wrapper><Gradient/>
         {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
                 <Banner bg_photo={makeImagePath(movies?.results[0].backdrop_path || "")}>
                     <Title>{movies?.results[0].title}</Title>
                     <Overview>{movies?.results[0].overview}</Overview>
+                    {!videoIdIsLoading && videoId &&
+                    <Trailer
+                        title="youtube video player"
+                        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0`}
+                        frameBorder="0"
+                        allowFullScreen
+                    />}
                 </Banner>
                 {
                     contents.map((content: any, index: number) =>

@@ -38,7 +38,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     line-height: 1.2;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: rgba(20, 20, 20, 1);
+    background-color: black;
     color: #fff;
     overflow-x: hidden;
 
