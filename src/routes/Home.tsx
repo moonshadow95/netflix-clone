@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
-import {getMovies, GetMoviesResult, getTrending, GetTrendingResult} from "../api";
-import {useQuery} from "react-query";
-import styled from "styled-components";
-import {makeImagePath} from "../utils";
-import {AnimatePresence, motion, useViewportScroll} from "framer-motion";
-import {useMatch, useNavigate} from "react-router-dom";
+import React, {useState} from 'react'
+import {getMovies, getTvs} from "../util/api"
+import {useQuery} from "react-query"
+import styled from "styled-components"
+import {makeImagePath} from "../util/utils"
+import {AnimatePresence, motion, useViewportScroll} from "framer-motion"
+import {useMatch, useNavigate} from "react-router-dom"
+import {Contents, ContentType, GetMoviesResult, GetTvsResult} from "../types";
 
 const Wrapper = styled.div`
 
@@ -166,41 +167,42 @@ const offset = 6
 
 const Home = () => {
     const {
-        data: nowPlaying,
-        isLoading: nowPlayingIsLoading
-    } = useQuery<GetMoviesResult>(["contents", "nowPlaying"], getMovies)
+        data: movies,
+        isLoading: moviesIsLoading
+    } = useQuery<GetMoviesResult>(["contents", "movies"], getMovies)
     const {
-        data: trending,
-        isLoading: trendingIsLoading
-    } = useQuery<GetTrendingResult>(["contents", "trending"], getTrending)
+        data: tvs,
+        isLoading: tvsIsLoading
+    } = useQuery<GetTvsResult>(["contents", "tvs"], getTvs)
+    const contents = [movies, tvs]
     const navigate = useNavigate()
     const clickedContentMatch = useMatch('/movies/:movieId')
     const {scrollY} = useViewportScroll()
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
     const onOverlayClick = () => navigate('/')
-    const clickedContent = clickedContentMatch?.params.movieId && (nowPlaying || trending)?.results.find((movie: any) => {
-        if (clickedContentMatch.params.movieId) {
-            return movie.id === +clickedContentMatch.params.movieId
-        }
-    })
-    const contents = [nowPlaying, trending]
+    const clickedContent = clickedContentMatch?.params.movieId && ((movies || tvs)?.results.find((content: Contents) => {
+            if (clickedContentMatch.params.movieId) {
+                return content.id === +clickedContentMatch.params.movieId
+            }
+        })
+    )
     const [rowIndex, setIndex] = useState(0)
     const [secondIndex, setSecondIndex] = useState(0)
     const [leaving, setLeaving] = useState(false)
     const increaseIndex = (event: any) => {
         if (leaving) return
         const {currentTarget} = event
-        if (currentTarget.id === "현재 상영중인 영화") {
+        if (currentTarget.id === ContentType.Movies) {
             if (leaving) return
             toggleLeaving()
-            const totalMovies = nowPlaying?.results.length
+            const totalMovies = movies?.results.length
             const maxIndex = Math.floor((totalMovies || 1) / offset)
             setSecondIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
         }
-        if (currentTarget.id === '인기 TV 콘텐츠') {
+        if (currentTarget.id === ContentType.Tvs) {
             if (leaving) return
             toggleLeaving()
-            const totalMovies = trending?.results.length
+            const totalMovies = tvs?.results.length
             const maxIndex = Math.floor((totalMovies || 1) / offset)
             setIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
         }
@@ -208,11 +210,11 @@ const Home = () => {
     const toggleLeaving = () => setLeaving(prev => !prev)
 
     return <Wrapper>
-        {nowPlayingIsLoading || trendingIsLoading ?
+        {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
-                <Banner bg_photo={makeImagePath(nowPlaying?.results[0].backdrop_path || "")}>
-                    <Title>{nowPlaying?.results[0].title}</Title>
-                    <Overview>{nowPlaying?.results[0].overview}</Overview>
+                <Banner bg_photo={makeImagePath(movies?.results[0].backdrop_path || "")}>
+                    <Title>{movies?.results[0].title}</Title>
+                    <Overview>{movies?.results[0].overview}</Overview>
                 </Banner>
                 {
                     contents.map((content: any, index: number) =>
@@ -264,5 +266,6 @@ const Home = () => {
             </>}
     </Wrapper>
 };
+
 
 export default Home;

@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import styled from "styled-components";
-import {motion, useAnimation, useViewportScroll} from "framer-motion";
-import {Link, useMatch, useNavigate} from "react-router-dom";
-import {useForm} from "react-hook-form";
+import React, {useEffect, useState} from 'react'
+import styled from "styled-components"
+import {motion, useAnimation, useViewportScroll} from "framer-motion"
+import {Link, useMatch, useNavigate} from "react-router-dom"
+import {useForm} from "react-hook-form"
 
 const Nav = styled(motion.div)`
   display: flex;

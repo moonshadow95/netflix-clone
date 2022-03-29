@@ -1,10 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import {HelmetProvider} from "react-helmet-async";
-import {RecoilRoot} from "recoil";
-import {createGlobalStyle, ThemeProvider} from "styled-components";
-import {theme} from "./theme";
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+import {HelmetProvider} from "react-helmet-async"
+import {RecoilRoot} from "recoil"
+import {createGlobalStyle, ThemeProvider} from "styled-components"
+import {theme} from "./util/theme"
 import {QueryClient, QueryClientProvider} from 'react-query'
 
 const GlobalStyle = createGlobalStyle`

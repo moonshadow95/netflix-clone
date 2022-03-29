@@ -1,12 +1,12 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Home from "./Routes/Home";
-import Series from "./Routes/Series";
-import Search from "./Routes/Search";
-import Header from "./Components/Header";
-import MyList from "./Routes/MyList";
-import Latest from "./Routes/Latest";
-import Movies from "./Routes/Movies";
+import Home from "./routes/Home";
+import Series from "./routes/Series";
+import Search from "./routes/Search";
+import Header from "./components/Header";
+import MyList from "./routes/MyList";
+import Latest from "./routes/Latest";
+import Movies from "./routes/Movies";
 
 function App() {
     return (

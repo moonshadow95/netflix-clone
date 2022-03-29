@@ -1,7 +1,8 @@
-import React from 'react';
-import {useSearchParams} from "react-router-dom";
-import {useQuery} from "react-query";
-import {Contents, searchMovieByKeyword} from "../api";
+import React from 'react'
+import {useSearchParams} from "react-router-dom"
+import {useQuery} from "react-query"
+import {searchMovieByKeyword} from "../util/api"
+import {Contents} from "../types";
 
 const Search = () => {
     const [searchParams] = useSearchParams()
