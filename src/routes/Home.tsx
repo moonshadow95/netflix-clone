@@ -5,7 +5,10 @@ import styled from "styled-components"
 import {makeImagePath} from "../util/utils"
 import {AnimatePresence, motion, useViewportScroll} from "framer-motion"
 import {useMatch, useNavigate} from "react-router-dom"
-import {Contents, ContentType, GetMoviesResult, GetTvsResult} from "../types";
+import {Contents, ContentType, GetMoviesResult, GetTvsResult} from "../types"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faVolumeXmark, faVolumeUp} from "@fortawesome/free-solid-svg-icons"
+
 
 const Wrapper = styled.div`
 
@@ -43,13 +46,29 @@ const Trailer = styled.iframe`
   pointer-events: none;
 `
 
+const Mute = styled(motion.div)`
+  width: 68px;
+  height: 68px;
+  border: 4px solid ${props => props.theme.white.lighter};
+  border-radius: 50%;
+  position: absolute;
+  bottom: 35%;
+  right: 8%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+`
+
 const Gradient = styled.div`
   position: fixed;
   bottom: 0;
   z-index: 1;
   width: 100vw;
   height: 100vh;
-  background-image: linear-gradient(rgba(0, 0, 0, 0) 80%, rgba(20, 20, 20, 0.8), rgb(20, 20, 20, 1));
+  background-image: linear-gradient(rgba(0, 0, 0, 0) 90%, rgba(20, 20, 20, 0.8), rgb(20, 20, 20, 1));
   pointer-events: none;
 `
 
@@ -206,15 +225,21 @@ const Home = () => {
     const {scrollY} = useViewportScroll()
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
     const onOverlayClick = () => navigate('/')
-    const clickedContent = clickedContentMatch?.params.movieId && ((movies || tvs)?.results.find((content: Contents) => {
-            if (clickedContentMatch.params.movieId) {
-                return content.id === +clickedContentMatch.params.movieId
-            }
-        })
-    )
+    const clickedContent = clickedContentMatch?.params.movieId && (contents.map(
+        content => content?.results.find(
+            (content: Contents) => {
+                if (clickedContentMatch.params.movieId) {
+                    return content.id === +clickedContentMatch.params.movieId
+                }
+            })
+    ))
+    const onMuteClick = () => {
+        setMute(prev => !prev)
+    }
     const [rowIndex, setIndex] = useState(0)
     const [secondIndex, setSecondIndex] = useState(0)
     const [leaving, setLeaving] = useState(false)
+    const [mute, setMute] = useState(true)
     const increaseIndex = (event: any) => {
         if (leaving) return
         const {currentTarget} = event
@@ -234,7 +259,6 @@ const Home = () => {
         }
     }
     const toggleLeaving = () => setLeaving(prev => !prev)
-
     return <Wrapper><Gradient/>
         {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
@@ -242,12 +266,22 @@ const Home = () => {
                     <Title>{movies?.results[0].title}</Title>
                     <Overview>{movies?.results[0].overview}</Overview>
                     {!videoIdIsLoading && videoId &&
-                    <Trailer
-                        title="youtube video player"
-                        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0`}
-                        frameBorder="0"
-                        allowFullScreen
-                    />}
+                    <>
+                        <Trailer
+                            title="youtube video player"
+                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0`}
+                            frameBorder="0"
+                            allowFullScreen
+                        />
+                        <Mute onClick={onMuteClick}
+                              whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+                              whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}>
+                            <FontAwesomeIcon
+                                icon={mute ? faVolumeXmark : faVolumeUp}
+                            />
+                        </Mute>
+                    </>
+                    }
                 </Banner>
                 {
                     contents.map((content: any, index: number) =>
@@ -283,12 +317,12 @@ const Home = () => {
                                 top: scrollY.get() + 50
                             }}
                         >{clickedContent && <>
-                            <PopupTitle>{clickedContent.title}</PopupTitle>
-                            <PopupOverview>{clickedContent.overview}</PopupOverview>
+                            <PopupTitle>{clickedContent[0]?.title || clickedContent[1]?.title}</PopupTitle>
+                            <PopupOverview>{clickedContent[0]?.overview || clickedContent[1]?.overview}</PopupOverview>
                             <PopupCover
                                 style={{
                                     backgroundImage: `linear-gradient(transparent
-                                    60%, rgb(20, 20, 20, 1)),url(${makeImagePath(clickedContent.backdrop_path, "")}`,
+                                    60%, rgb(20, 20, 20, 1)),url(${makeImagePath(clickedContent[0]?.backdrop_path || clickedContent[1]?.backdrop_path || "", "")}`,
                                     backgroundSize: 'cover'
                                 }}
                             />
