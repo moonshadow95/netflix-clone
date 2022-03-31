@@ -34,9 +34,9 @@ const Row = styled(motion.div)`
 const Buttons = styled.div`
   position: absolute;
   top: 50%;
+  width: calc(100vw - 20px);
   transform: translateY(-50%);
-  left: -70px;
-  width: 100vw;
+  margin-left: -70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,14 +51,6 @@ const Button = styled(motion.span)`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  &:first-child {
-    margin-left: 24px;
-  }
-
-  &:last-child {
-    margin-right: 24px;
-  }
 `
 
 const Box = styled(motion.div)<{ bg_photo: string }>`
@@ -92,11 +84,13 @@ const Info = styled(motion.div)`
 `
 
 const rowVariants = {
-    hidden: {
-        x: window.innerWidth
-    },
+    hidden: (backward: boolean) => ({
+        x: backward ? -window.innerWidth : window.innerWidth
+    }),
     visible: {x: 0},
-    exit: {x: -window.innerWidth}
+    exit: (backward: boolean) => ({
+        x: !backward ? -window.innerWidth : window.innerWidth
+    })
 }
 
 const boxVariants = {
@@ -118,30 +112,33 @@ const infoVariants = {
 const offset = 6
 
 const Carousel = ({content}: { content: any }) => {
-    const [rowIndex, setIndex] = useState(0)
-    const [secondIndex, setSecondIndex] = useState(0)
+    const [tvsIndex, setTvsIndex] = useState(0)
+    const [moviesIndex, setMoviesIndex] = useState(0)
     const [leaving, setLeaving] = useState(false)
+    const [backward, setBackward] = useState(false)
     const navigate = useNavigate()
+    const toggleLeaving = () => setLeaving(prev => !prev)
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
     const increaseIndex = (event: any) => {
+        const {currentTarget: {id}} = event
         if (leaving) return
-        const {currentTarget} = event
-        if (currentTarget.id === ContentType.Movies) {
-            if (leaving) return
-            toggleLeaving()
-            const totalMovies = content?.results.length
-            const maxIndex = Math.floor((totalMovies || 1) / offset)
-            setSecondIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
-        }
-        if (currentTarget.id === ContentType.Tvs) {
-            if (leaving) return
-            toggleLeaving()
-            const totalMovies = content?.results.length
-            const maxIndex = Math.floor((totalMovies || 1) / offset)
-            setIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
-        }
+        setBackward(false)
+        toggleLeaving()
+        const totalMovies = content?.results.length
+        const maxIndex = Math.floor((totalMovies || 1) / offset)
+        if (id === ContentType.Movies) setMoviesIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
+        if (id === ContentType.Tvs) setTvsIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
     }
-    const toggleLeaving = () => setLeaving(prev => !prev)
+    const decreaseIndex = (event: any) => {
+        const {currentTarget: {id}} = event
+        if (leaving) return
+        setBackward(true)
+        toggleLeaving()
+        const totalContents = content?.results.length
+        const maxIndex = Math.floor((totalContents || 1) / offset)
+        if (id === ContentType.Movies) setMoviesIndex((prev: number) => prev === 0 ? maxIndex : prev - 1)
+        if (id === ContentType.Tvs) setTvsIndex((prev: number) => prev === 0 ? maxIndex : prev - 1)
+    }
     return (
         <Slider>
             <SliderTitle>
@@ -152,21 +149,24 @@ const Carousel = ({content}: { content: any }) => {
                     id={content.slider_title}
                     whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
-                    onClick={increaseIndex}><FontAwesomeIcon
-                    icon={faChevronLeft}/></Button>
+                    onClick={decreaseIndex}>
+                    <FontAwesomeIcon icon={faChevronLeft}/>
+                </Button>
                 <Button
                     id={content.slider_title}
                     whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
-                    onClick={increaseIndex}><FontAwesomeIcon
-                    icon={faChevronRight}/></Button>
+                    onClick={increaseIndex}>
+                    <FontAwesomeIcon icon={faChevronRight}/>
+                </Button>
             </Buttons>
             <AnimatePresence onExitComplete={toggleLeaving} initial={false}>
-                <Row key={content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex}
+                <Row key={content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex}
                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
+                     custom={backward}
                      transition={{type: 'linear', duration: 1}}>
                     {content?.results.slice(1)
-                        .slice(offset * (content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? rowIndex : secondIndex) + offset)
+                        .slice(offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex) + offset)
                         .map((movie: any) =>
                             <Box key={movie.id} onClick={() => onBoxClick(movie.id)}
                                  layoutId={movie.id + ""} variants={boxVariants}

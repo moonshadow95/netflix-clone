@@ -5,7 +5,7 @@ import styled from "styled-components"
 import {makeImagePath} from "../util/utils"
 import {AnimatePresence, motion, useViewportScroll} from "framer-motion"
 import {useMatch, useNavigate} from "react-router-dom"
-import {Contents, ContentType, GetMoviesResult, GetTvsResult} from "../types"
+import {Contents, GetMoviesResult, GetTvsResult} from "../types"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faVolumeXmark, faVolumeUp} from "@fortawesome/free-solid-svg-icons"
 import Carousel from "../components/Carousel"
@@ -180,7 +180,7 @@ const Home = () => {
                 </Banner>
                 {
                     contents.map((content, index: number) =>
-                        <Carousel content={content}/>
+                        <Carousel key={index} content={content}/>
                     )
                 }
                 {clickedContentMatch && <AnimatePresence>
