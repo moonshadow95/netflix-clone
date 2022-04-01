@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {getMovies, getTvs, getVideo} from "../util/api"
 import {useQuery} from "react-query"
 import styled from "styled-components"
@@ -150,10 +150,18 @@ const Home = () => {
                 }
             })
     ))
+    const trailer: any = document.querySelector('#trailer')
     const onMuteClick = () => {
+        if (mute) {
+            trailer?.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*')
+        }
+        if (!mute) {
+            trailer?.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*')
+        }
         setMute(prev => !prev)
     }
     const [mute, setMute] = useState(true)
+    
     return <Wrapper><Gradient/>
         {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
@@ -163,10 +171,11 @@ const Home = () => {
                     {!videoIdIsLoading && videoId &&
                     <>
                         <Trailer
+                            id='trailer'
                             title="youtube video player"
-                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0`}
+                            src={`https://www.youtube.com/embed/${videoId}?&mute=1&autoplay=1&enablejsapi=1&version=3&playerapiid=ytplayer&controls=0`}
                             frameBorder="0"
-                            allowFullScreen
+                            allow='autoplay'
                         />
                         <Mute onClick={onMuteClick}
                               whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}

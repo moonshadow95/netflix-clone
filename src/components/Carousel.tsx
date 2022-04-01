@@ -45,7 +45,6 @@ const Buttons = styled.div`
 const Button = styled(motion.span)`
   width: 70px;
   height: 70px;
-  background-color: rgba(0, 0, 0, 0.4);
   font-size: 32px;
   cursor: pointer;
   display: flex;
@@ -147,14 +146,14 @@ const Carousel = ({content}: { content: any }) => {
             <Buttons>
                 <Button
                     id={content.slider_title}
-                    whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+                    whileHover={{backgroundColor: 'rgba(0,0,0,0.4)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                     onClick={decreaseIndex}>
                     <FontAwesomeIcon icon={faChevronLeft}/>
                 </Button>
                 <Button
                     id={content.slider_title}
-                    whileHover={{backgroundColor: 'rgba(255,255,255,0.2)'}}
+                    whileHover={{backgroundColor: 'rgba(0,0,0,0.4)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                     onClick={increaseIndex}>
                     <FontAwesomeIcon icon={faChevronRight}/>
