@@ -22,6 +22,6 @@ export interface GetMoviesResult {
 }
 
 export enum ContentType {
-    Movies = '현재 상영중인 영화',
-    Tvs = '인기 TV 콘텐츠'
+    Movies = 'Now Playing',
+    Tvs = 'TV Shows'
 }

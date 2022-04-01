@@ -160,12 +160,12 @@ const Carousel = ({content}: { content: any }) => {
                 </Button>
             </Buttons>
             <AnimatePresence onExitComplete={toggleLeaving} initial={false}>
-                <Row key={content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex}
+                <Row key={content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex}
                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                      custom={backward}
                      transition={{type: 'linear', duration: 1}}>
                     {content?.results.slice(1)
-                        .slice(offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex) + offset)
+                        .slice(offset * (content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex) + offset)
                         .map((movie: any) =>
                             <Box key={movie.id} onClick={() => onBoxClick(movie.id)}
                                  layoutId={movie.id + ""} variants={boxVariants}

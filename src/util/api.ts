@@ -11,7 +11,7 @@ export async function getMovies() {
     //         result.overview = translations.overview
     //     }
     // )
-    result['slider_title'] = '현재 상영중인 영화'
+    result['slider_title'] = 'Now Playing'
     return result
 }
 
@@ -24,7 +24,7 @@ export async function getTvs() {
     //         result.overview = translations.overview
     //     }
     // )
-    result['slider_title'] = '인기 TV 콘텐츠'
+    result['slider_title'] = 'TV Shows'
     return result
 }
 
