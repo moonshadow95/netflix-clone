@@ -5,34 +5,14 @@ const YOUTUBE_BASE_PATH = "https://www.googleapis.com/youtube/v3"
 
 export async function getMovies() {
     const result = await (await fetch(`${TMDB_BASE_PATH}/movie/now_playing?api_key=${TMDB_API_KEY}`)).json()
-    const translations = await getTranslation(508947, "KR")
-    // result.results.map((result: any) => {
-    //         result.title = translations.title
-    //         result.overview = translations.overview
-    //     }
-    // )
     result['slider_title'] = 'Now Playing'
     return result
 }
 
 export async function getTvs() {
     const result = await (await fetch(`${TMDB_BASE_PATH}/trending/tv/day?api_key=${TMDB_API_KEY}`)).json()
-    const translations = await getTranslation(508947, "KR")
-    //
-    // result.results.map((result: any) => {
-    //         result.title = translations.title
-    //         result.overview = translations.overview
-    //     }
-    // )
     result['slider_title'] = 'TV Shows'
     return result
-}
-
-// TODO - Fix Translations
-export async function getTranslation(id: number, iso: string) {
-    const result = await (await fetch(`${TMDB_BASE_PATH}/movie/${id}/translations?api_key=${TMDB_API_KEY}`)).json()
-    const translations = result.translations.find((item: any) => item.iso_3166_1 === iso).data
-    return {title: translations.title, overview: translations.overview}
 }
 
 export async function searchMovieByKeyword(keyword: string) {

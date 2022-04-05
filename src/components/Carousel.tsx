@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {AnimatePresence, motion} from "framer-motion"
 import {makeImagePath} from "../util/utils"
 import styled from "styled-components"
-import {ContentType} from "../types"
+import {Contents, ContentType, APIResult} from "../types"
 import {useNavigate} from "react-router-dom"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons"
@@ -110,7 +110,7 @@ const infoVariants = {
 
 const offset = 6
 
-const Carousel = ({content}: { content: any }) => {
+const Carousel = ({content}: { content: APIResult }) => {
     const [tvsIndex, setTvsIndex] = useState(0)
     const [moviesIndex, setMoviesIndex] = useState(0)
     const [leaving, setLeaving] = useState(false)
@@ -118,26 +118,27 @@ const Carousel = ({content}: { content: any }) => {
     const navigate = useNavigate()
     const toggleLeaving = () => setLeaving(prev => !prev)
     const onBoxClick = (id: number) => navigate(`movies/${id}`)
-    const increaseIndex = (event: any) => {
+    const increaseIndex = (event: React.MouseEvent) => {
         const {currentTarget: {id}} = event
         if (leaving) return
         setBackward(false)
         toggleLeaving()
         const totalMovies = content?.results.length
         const maxIndex = Math.floor((totalMovies || 1) / offset)
-        if (id === ContentType.Movies) setMoviesIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
-        if (id === ContentType.Tvs) setTvsIndex((prev: number) => prev === maxIndex ? 0 : prev + 1)
+        if (id === ContentType.Movies) setMoviesIndex((currentIndex: number) => currentIndex === maxIndex ? 0 : currentIndex + 1)
+        if (id === ContentType.Tvs) setTvsIndex((currentIndex: number) => currentIndex === maxIndex ? 0 : currentIndex + 1)
     }
     const decreaseIndex = (event: any) => {
         const {currentTarget: {id}} = event
         if (leaving) return
         setBackward(true)
         toggleLeaving()
-        const totalContents = content?.results.length
-        const maxIndex = Math.floor((totalContents || 1) / offset)
-        if (id === ContentType.Movies) setMoviesIndex((prev: number) => prev === 0 ? maxIndex : prev - 1)
-        if (id === ContentType.Tvs) setTvsIndex((prev: number) => prev === 0 ? maxIndex : prev - 1)
+        const totalContents = content.results.length
+        const maxIndex = Math.floor(totalContents / offset)
+        if (id === ContentType.Movies) setMoviesIndex((currentIndex: number) => currentIndex === 0 ? maxIndex : currentIndex - 1)
+        if (id === ContentType.Tvs) setTvsIndex((currentIndex: number) => currentIndex === 0 ? maxIndex : currentIndex - 1)
     }
+
     return (
         <Slider>
             <SliderTitle>
@@ -146,14 +147,14 @@ const Carousel = ({content}: { content: any }) => {
             <Buttons>
                 <Button
                     id={content.slider_title}
-                    whileHover={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+                    whileHover={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                     onClick={decreaseIndex}>
                     <FontAwesomeIcon icon={faChevronLeft}/>
                 </Button>
                 <Button
                     id={content.slider_title}
-                    whileHover={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+                    whileHover={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                     whileTap={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                     onClick={increaseIndex}>
                     <FontAwesomeIcon icon={faChevronRight}/>
@@ -164,16 +165,17 @@ const Carousel = ({content}: { content: any }) => {
                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                      custom={backward}
                      transition={{type: 'linear', duration: 1}}>
-                    {content?.results.slice(1)
-                        .slice(offset * (content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex), offset * (content.slider_title === '인기 TV 콘텐츠' ? tvsIndex : moviesIndex) + offset)
-                        .map((movie: any) =>
-                            <Box key={movie.id} onClick={() => onBoxClick(movie.id)}
-                                 layoutId={movie.id + ""} variants={boxVariants}
+                    {content.results.slice(0)
+                        .slice((content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex) * offset, offset * ((content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex) + 1))
+                        // .slice(moviesIndex * offset, (moviesIndex + 1) * offset)
+                        .map((item: Contents) =>
+                            <Box key={item.id} onClick={() => onBoxClick(item.id)}
+                                 layoutId={item.id + ""} variants={boxVariants}
                                  initial='normal' whileHover='hover' transition={{type: 'linear'}}
-                                 bg_photo={makeImagePath(movie.backdrop_path, "w500")}
+                                 bg_photo={makeImagePath(item.backdrop_path, "w500")}
                             >
                                 <Info variants={infoVariants}>
-                                    <h4>{movie.title || movie.name}</h4>
+                                    <h4>{item.title || item.name}</h4>
                                 </Info>
                             </Box>)}
                 </Row>

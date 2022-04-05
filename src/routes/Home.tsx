@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {getMovies, getTvs, getVideo} from "../util/api"
 import {useQuery} from "react-query"
 import styled from "styled-components"
 import {makeImagePath} from "../util/utils"
 import {AnimatePresence, motion, useViewportScroll} from "framer-motion"
 import {useMatch, useNavigate} from "react-router-dom"
-import {Contents, GetMoviesResult, GetTvsResult} from "../types"
+import {Contents, APIResult} from "../types"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faVolumeXmark, faVolumeUp} from "@fortawesome/free-solid-svg-icons"
 import Carousel from "../components/Carousel"
@@ -131,13 +131,16 @@ const Home = () => {
     const {
         data: movies,
         isLoading: moviesIsLoading
-    } = useQuery<GetMoviesResult>(["contents", "movies"], getMovies)
+    } = useQuery<APIResult>(["contents", "movies"], getMovies)
     const {
         data: tvs,
         isLoading: tvsIsLoading
-    } = useQuery<GetTvsResult>(["contents", "tvs"], getTvs)
+    } = useQuery<APIResult>(["contents", "tvs"], getTvs)
     const {data: videoId, isLoading: videoIdIsLoading} = useQuery(["video"], getVideo)
-    const contents = [movies, tvs]
+    let contents = []
+    if (tvs && movies) {
+        contents.push(movies, tvs)
+    }
     const navigate = useNavigate()
     const clickedContentMatch = useMatch('/movies/:movieId')
     const {scrollY} = useViewportScroll()
@@ -161,7 +164,6 @@ const Home = () => {
         setMute(prev => !prev)
     }
     const [mute, setMute] = useState(true)
-    
     return <Wrapper><Gradient/>
         {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
@@ -187,11 +189,10 @@ const Home = () => {
                     </>
                     }
                 </Banner>
-                {
-                    contents.map((content, index: number) =>
-                        <Carousel key={index} content={content}/>
-                    )
-                }
+                {contents[0] &&
+                contents.map((content: APIResult, index: number) =>
+                    <Carousel key={index} content={content}/>
+                )}
                 {clickedContentMatch && <AnimatePresence>
                     <>
                         <Popup
