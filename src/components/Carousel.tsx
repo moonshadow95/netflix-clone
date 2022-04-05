@@ -12,8 +12,8 @@ const Slider = styled.div`
   position: relative;
   width: calc(100% - 140px);
   margin: 0 auto;
-  top: -310px;
-  height: 320px;
+  top: -320px;
+  height: 350px;
 `
 
 const SliderTitle = styled.h3`
@@ -22,12 +22,11 @@ const SliderTitle = styled.h3`
   margin-bottom: 15px;
 `
 
-const Row = styled(motion.div)`
+const Row = styled(motion.div)<{ rowOffset: number }>`
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns:repeat(${props => props.rowOffset}, 1fr);
   width: 100%;
-  margin-bottom: 80px;
   position: absolute;
 `
 
@@ -56,7 +55,7 @@ const Box = styled(motion.div)<{ bg_photo: string }>`
   background-image: url(${props => props.bg_photo});
   background-position: center;
   background-size: cover;
-  height: 200px;
+  height: 250px;
   color: #000;
   font-size: 24px;
   border-radius: 4px;
@@ -108,7 +107,7 @@ const infoVariants = {
     },
 }
 
-const offset = 6
+const offset = 5
 
 const Carousel = ({content}: { content: APIResult }) => {
     const [tvsIndex, setTvsIndex] = useState(0)
@@ -123,10 +122,11 @@ const Carousel = ({content}: { content: APIResult }) => {
         if (leaving) return
         setBackward(false)
         toggleLeaving()
-        const totalMovies = content?.results.length
-        const maxIndex = Math.floor((totalMovies || 1) / offset)
+        const totalMovies = content.results.length
+        const maxIndex = Math.ceil(totalMovies / offset) - 1
         if (id === ContentType.Movies) setMoviesIndex((currentIndex: number) => currentIndex === maxIndex ? 0 : currentIndex + 1)
         if (id === ContentType.Tvs) setTvsIndex((currentIndex: number) => currentIndex === maxIndex ? 0 : currentIndex + 1)
+        console.log(maxIndex)
     }
     const decreaseIndex = (event: any) => {
         const {currentTarget: {id}} = event
@@ -134,7 +134,7 @@ const Carousel = ({content}: { content: APIResult }) => {
         setBackward(true)
         toggleLeaving()
         const totalContents = content.results.length
-        const maxIndex = Math.floor(totalContents / offset)
+        const maxIndex = Math.ceil(totalContents / offset)
         if (id === ContentType.Movies) setMoviesIndex((currentIndex: number) => currentIndex === 0 ? maxIndex : currentIndex - 1)
         if (id === ContentType.Tvs) setTvsIndex((currentIndex: number) => currentIndex === 0 ? maxIndex : currentIndex - 1)
     }
@@ -164,7 +164,9 @@ const Carousel = ({content}: { content: APIResult }) => {
                 <Row key={content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex}
                      variants={rowVariants} initial='hidden' animate='visible' exit='exit'
                      custom={backward}
-                     transition={{type: 'linear', duration: 1}}>
+                     transition={{type: 'linear', duration: 1}}
+                     rowOffset={offset}
+                >
                     {content.results.slice(0)
                         .slice((content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex) * offset, offset * ((content.slider_title === ContentType.Tvs ? tvsIndex : moviesIndex) + 1))
                         // .slice(moviesIndex * offset, (moviesIndex + 1) * offset)
