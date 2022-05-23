@@ -136,7 +136,7 @@ const Home = () => {
         data: tvs,
         isLoading: tvsIsLoading
     } = useQuery<APIResult>(["contents", "tvs"], getTvs)
-    const {data: videoId, isLoading: videoIdIsLoading} = useQuery(["video"], getVideo)
+    const {data: videoId, isLoading: videoIdIsLoading} = useQuery(["video"], () => getVideo(movies?.results[0].title))
     let contents = []
     if (tvs && movies) {
         contents.push(movies, tvs)
