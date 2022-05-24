@@ -164,12 +164,13 @@ const Home = () => {
         setMute(prev => !prev)
     }
     const [mute, setMute] = useState(true)
+    console.log(clickedContent)
     return <Wrapper><Gradient/>
         {moviesIsLoading || tvsIsLoading ?
             <Loader>Loading...</Loader> : <>
                 <Banner bg_photo={makeImagePath(movies?.results[0].backdrop_path || "")}>
                     <Title>{movies?.results[0].title}</Title>
-                    <Overview>{movies?.results[0].overview}</Overview>
+                    <Overview>{movies?.results[0].overview}</Overview>ㅋㅋ
                     {!videoIdIsLoading && videoId &&
                     <>
                         <Trailer
@@ -193,7 +194,8 @@ const Home = () => {
                 contents.map((content: APIResult, index: number) =>
                     <Carousel key={index} content={content}/>
                 )}
-                {clickedContentMatch && <AnimatePresence>
+                {clickedContentMatch &&
+                <AnimatePresence>
                     <>
                         <Popup
                             layoutId={clickedContentMatch.params.movieId}
@@ -202,7 +204,7 @@ const Home = () => {
                             }}
                             transition={{type: 'linear'}}
                         >{clickedContent && <>
-                            <PopupTitle>{clickedContent[0]?.title || clickedContent[1]?.title}</PopupTitle>
+                            <PopupTitle>{clickedContent[0]?.title || clickedContent[1]?.title || clickedContent[0]?.name || clickedContent[1]?.name}</PopupTitle>
                             <PopupOverview>{clickedContent[0]?.overview || clickedContent[1]?.overview}</PopupOverview>
                             <PopupCover
                                 style={{
